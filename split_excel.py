@@ -20,7 +20,7 @@ if uploaded_file is not None:
             for i, (sheet_name, data) in enumerate(sheets.items()):
                 try:
                     # Зчитування значення з клітинки A1 для використання як назву файлу
-                    file_name = str(data.iloc[0, 0]).strip()
+                    file_name = str(data.iloc[0, 0]).strip()  # Значення з A1
                     if pd.isna(file_name) or not file_name:
                         file_name = sheet_name  # Якщо A1 порожній або не рядок, використовується ім'я аркуша
                     
