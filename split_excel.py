@@ -9,8 +9,8 @@ uploaded_file = st.file_uploader("Завантажте ваш Excel файл", t
 
 if uploaded_file is not None:
     try:
-        # Завантажте всі аркуші з файлу
-        sheets = pd.read_excel(uploaded_file, sheet_name=None)
+        # Завантажте всі аркуші з файлу без автоматичного визначення заголовків стовпців
+        sheets = pd.read_excel(uploaded_file, sheet_name=None, header=None)
 
         # Відобразити список аркушів
         st.write("Знайдено аркуші:", list(sheets.keys()))
@@ -19,11 +19,9 @@ if uploaded_file is not None:
         if st.button("Зберегти кожен аркуш як окремий Excel файл"):
             for i, (sheet_name, data) in enumerate(sheets.items()):
                 try:
-                    # Зчитування значення з клітинки A1 для використання як назву файлу
-                    file_name = str(data.iloc[0, 0]).strip()  # Значення з A1
-                    if pd.isna(file_name) or not file_name:
-                        file_name = sheet_name  # Якщо A1 порожній або не рядок, використовується ім'я аркуша
-                    
+                    # Перевірка значення з клітинки A1
+                    file_name = str(data.iloc[0, 0]).strip() if not data.empty else sheet_name
+
                     # Очищення імені файлу
                     file_name = file_name.replace('/', '').replace('\\', '')  # Видалення символів / і \
                     file_name = file_name[:50]  # Обмеження довжини імені файлу до 50 символів
@@ -44,9 +42,9 @@ if uploaded_file is not None:
                         )
 
                 except Exception as e:
-                    st.error(f"Сталася помилка з аркушем {sheet_name}: {e}")
+                    st.error(f"Помилка з аркушем {sheet_name}: {e}")
 
             st.success("Всі файли збережено!")
 
     except Exception as e:
-        st.error(f"Сталася помилка: {e}")
+        st.error(f"Помилка: {e}")
