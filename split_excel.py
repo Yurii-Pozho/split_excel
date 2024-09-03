@@ -18,25 +18,27 @@ if uploaded_file is not None:
         # Кнопка для збереження файлів
         if st.button("Зберегти кожен аркуш як окремий Excel файл"):
             for i, (sheet_name, data) in enumerate(sheets.items()):
-                # Зчитування значення з клітинки A1 для використання як назву файлу
                 try:
-                    file_name = data.iloc[0, 0]
-                    if pd.isna(file_name) or not isinstance(file_name, str):
+                    # Зчитування значення з клітинки A1 для використання як назву файлу
+                    file_name = str(data.iloc[0, 0]).strip()
+                    if pd.isna(file_name) or not file_name:
                         file_name = sheet_name  # Якщо A1 порожній або не рядок, використовується ім'я аркуша
-
-                    file_name = file_name.replace('/', '')  # Очищення імені файлу
-                    output_file = pd.ExcelWriter(f"{file_name}.xlsx", engine='xlsxwriter')
-
+                    
+                    # Очищення імені файлу
+                    file_name = file_name.replace('/', '').replace('\\', '')  # Видалення символів / і \
+                    file_name = file_name[:50]  # Обмеження довжини імені файлу до 50 символів
+                    
                     # Збереження файлу
-                    data.to_excel(output_file, index=False, sheet_name=sheet_name)
-                    output_file.close()
+                    output_file_path = f"{file_name}.xlsx"
+                    with pd.ExcelWriter(output_file_path, engine='xlsxwriter') as output_file:
+                        data.to_excel(output_file, index=False, sheet_name=sheet_name)
 
                     # Показати лінк для скачування файлу з унікальним ключем
-                    with open(f"{file_name}.xlsx", "rb") as file:
+                    with open(output_file_path, "rb") as file:
                         st.download_button(
                             label=f"Скачати {file_name}.xlsx",
                             data=file,
-                            file_name=f"{file_name}.xlsx",
+                            file_name=output_file_path,
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             key=f"download_{i}"  # Додання унікального ключа
                         )
