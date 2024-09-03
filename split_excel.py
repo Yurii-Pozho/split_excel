@@ -17,7 +17,7 @@ if uploaded_file is not None:
 
         # Кнопка для збереження файлів
         if st.button("Зберегти кожен аркуш як окремий Excel файл"):
-            for sheet_name, data in sheets.items():
+            for i, (sheet_name, data) in enumerate(sheets.items()):
                 # Зчитування значення з клітинки A1 для використання як назву файлу
                 try:
                     file_name = data.iloc[0, 0]
@@ -31,13 +31,14 @@ if uploaded_file is not None:
                     data.to_excel(output_file, index=False, sheet_name=sheet_name)
                     output_file.close()
 
-                    # Показати лінк для скачування файлу
+                    # Показати лінк для скачування файлу з унікальним ключем
                     with open(f"{file_name}.xlsx", "rb") as file:
                         st.download_button(
                             label=f"Скачати {file_name}.xlsx",
                             data=file,
                             file_name=f"{file_name}.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            key=f"download_{i}"  # Додання унікального ключа
                         )
 
                 except Exception as e:
