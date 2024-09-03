@@ -11,11 +11,13 @@ uploaded_file = st.file_uploader("Завантажте ваш Excel файл", t
 
 if uploaded_file is not None:
     try:
-        # Завантажте всі аркуші з файлу
+        # Завантажте всі аркуші з файлу за допомогою pandas
         sheets = pd.read_excel(uploaded_file, sheet_name=None)
 
-        # Перейменування аркушів
+        # Завантажте файл за допомогою openpyxl для перейменування аркушів
         workbook = load_workbook(filename=io.BytesIO(uploaded_file.read()))
+
+        # Перейменування аркушів
         for sheet in workbook.worksheets:
             # Отримайте значення з клітинки A1
             new_name = sheet['A1'].value
@@ -23,7 +25,7 @@ if uploaded_file is not None:
             if new_name:  # Перевірте, чи є значення
                 # Очистіть назву аркуша (прибрати небажані символи)
                 cleaned_name = re.sub(r'[\/:*?"<>|]', '', new_name)
-
+                
                 # Перейменуйте аркуш
                 sheet.title = cleaned_name
         
@@ -37,7 +39,7 @@ if uploaded_file is not None:
                 output_file = io.BytesIO()
 
                 # Збереження файлу в пам'яті
-                with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+                with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
                     df = pd.DataFrame(sheet.values)
                     df.to_excel(writer, index=False, sheet_name=cleaned_name)
                 
