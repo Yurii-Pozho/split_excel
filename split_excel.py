@@ -4,7 +4,7 @@ import streamlit as st
 # Інтерфейс Streamlit для завантаження файлу
 st.title("Розділення аркушів Excel на окремі файли")
 
-uploaded_file = st.file_uploader("Завантажте ваш Excel файл", type=['xlsx'])
+uploaded_file = st.file_uploader("Завантажте ваш Excel файл", type=['xlsx', 'xls'])
 
 if uploaded_file is not None:
     try:
